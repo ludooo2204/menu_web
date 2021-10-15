@@ -1,15 +1,33 @@
-
-import React, {useState} from 'react';
-
+import React, { useState, useEffect } from "react";
+import { matchSorter } from "match-sorter";
 
 const NewPlat = () => {
-	let [platName, setPlatName] = useState('');
-	let [platType, setPlatType] = useState('');
-	let [midiSoir, setMidiSoir] = useState('');
-	let [ingredients, setIngredients] = useState('');
-	let [saison, setSaison] = useState('');
-	let [typeViande, setTypeViande] = useState('');
-	let [platNbrPossible, setPlatNbrPossible] = useState('');
+	let [bdd, setBdd] = useState(null);
+	let [platTrouvés, setPlatTrouvés] = useState(null);
+	// let [bddName, setBddName] = useState(null);
+	let [platName, setPlatName] = useState("");
+	let [platType, setPlatType] = useState("");
+	let [midiSoir, setMidiSoir] = useState("");
+	let [ingredients, setIngredients] = useState("");
+	let [saison, setSaison] = useState("");
+	let [typeViande, setTypeViande] = useState("");
+	let [platNbrPossible, setPlatNbrPossible] = useState("");
+
+	useEffect(() => {
+		console.log("appel bdd");
+		fetch("http://localhost/API_menu/get.php")
+			.then((reponse) => reponse.json())
+			.then((data) => {
+				console.log(data);
+				setBdd(data);
+			});
+	}, []);
+
+	const recherche = (plat) => {
+		const resultatDeRecherche = matchSorter(bdd, plat.target.value, { keys: ["nom"],threshold:matchSorter.rankings.CONTAINS });
+		console.log(resultatDeRecherche)
+		setPlatTrouvés(resultatDeRecherche)
+	};
 
 	// let register_user = () => {
 	// 	console.log('submit');
@@ -53,18 +71,17 @@ const NewPlat = () => {
 	// };
 
 	return (
-			<div style={{flex: 1, backgroundColor: 'white'}}>
-			
-							<input
-								placeholder="entrer le nom du plat"
-								onChangeText={platName => setPlatName(platName)}
-								maxLength={225}
-								numberOfLines={2}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
+		<div style={{ flex: 1, backgroundColor: "white" }}>
+			<label>recherche</label>
+			<input placeholder="recherche de plat existant" onChange={(platName) => recherche(platName)} maxLength={225} numberOfLines={2} multiline={true} style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
+			<div style={{ backgroundColor: "grey" }}>{platTrouvés&&platTrouvés.map(plat=><div>{plat.nom}</div>)}</div>
+			<br />
+			<br />
+			<br />
+			<br />
+			<input placeholder="entrer le nom du plat" onChangeText={(platName) => setPlatName(platName)} maxLength={225} numberOfLines={2} multiline={true} style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
 
-							/>
-							{/* <Mytextinput
+			{/* <Mytextinput
 								placeholder="entrer le type du plat"
 								onChangeText={platType => setPlatType(platType)}
 								maxLength={225}
@@ -118,8 +135,8 @@ const NewPlat = () => {
 								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
 
 							/> */}
-							<button title="Submit" onPress={()=>console.log("coucou")} />
-			</div>
+			<button title="Submit" onPress={() => console.log("coucou")} />
+		</div>
 	);
 };
 
