@@ -2,140 +2,87 @@ import React, { useState, useEffect } from "react";
 import { matchSorter } from "match-sorter";
 
 const NewPlat = () => {
-	let [bdd, setBdd] = useState(null);
+	let [bddPlats, setBddPlats] = useState(null);
+	let [bddIngredients, setBddIngredients] = useState(null);
 	let [platTrouvés, setPlatTrouvés] = useState(null);
+	let [ingredientTrouvés, setIngredientTrouvés] = useState(null);
 	// let [bddName, setBddName] = useState(null);
 	let [platName, setPlatName] = useState("");
 	let [platType, setPlatType] = useState("");
 	let [midiSoir, setMidiSoir] = useState("");
-	let [ingredients, setIngredients] = useState("");
+	let [ingredientsChoisi, setIngredientsChoisi] = useState([]);
 	let [saison, setSaison] = useState("");
 	let [typeViande, setTypeViande] = useState("");
 	let [platNbrPossible, setPlatNbrPossible] = useState("");
 
 	useEffect(() => {
 		console.log("appel bdd");
-		fetch("http://localhost/API_menu/get.php")
+		fetch("http://localhost/API_menu/getPlats.php")
 			.then((reponse) => reponse.json())
 			.then((data) => {
 				console.log(data);
-				setBdd(data);
+				const platUnique = new Set(data.map((plat) => plat.nom_plat));
+				setBddIngredients([...new Set(data.map((plat) => plat.nom_ingredient))]);
+				let platsAvecIngredient = [];
+				for (const iterator of platUnique) {
+					let ingredients = [];
+					for (const iterator2 of data) {
+						if (iterator2.nom_plat == iterator) ingredients.push(iterator2.nom_ingredient);
+					}
+					// console.log(iterator);
+					const platAvecIngredient = data.filter((e) => e.nom_plat == iterator)[0];
+					platsAvecIngredient.push({ nom_plat: platAvecIngredient.nom_plat, féculentsConseillés: platAvecIngredient.féculentsConseillés, légumesConseillés: platAvecIngredient.légumesConseillés, midiSoir: platAvecIngredient.midiSoir, nbrDeRepasPossible: platAvecIngredient.nbrDeRepasPossible, ingredients, saison: platAvecIngredient.saison, tempsDePreparation: platAvecIngredient.tempsDePreparation, typePlat: platAvecIngredient.typePlat, typeViande: platAvecIngredient.typeViande });
+					// console.log(platsAvecIngredient);
+				}
+				setBddPlats(platsAvecIngredient);
 			});
 	}, []);
 
-	const recherche = (plat) => {
-		const resultatDeRecherche = matchSorter(bdd, plat.target.value, { keys: ["nom"],threshold:matchSorter.rankings.CONTAINS });
-		console.log(resultatDeRecherche)
-		setPlatTrouvés(resultatDeRecherche)
+	useEffect(() => {
+		if (bddPlats) {
+			console.log(bddPlats);
+		}
+	}, [bddPlats]);
+	const recherchePlat = (plat) => {
+		const resultatDeRecherche = matchSorter(bddPlats, plat.target.value, { keys: ["nom_plat"], threshold: matchSorter.rankings.CONTAINS });
+		console.log(resultatDeRecherche);
+		setPlatTrouvés(resultatDeRecherche);
+	};
+	const rechercheIngredient = (plat) => {
+		console.log(plat.target.value);
+		console.log(bddIngredients);
+		const resultatDeRecherche = matchSorter(bddIngredients, plat.target.value, { threshold: matchSorter.rankings.CONTAINS });
+		console.log(resultatDeRecherche);
+		setIngredientTrouvés(resultatDeRecherche);
 	};
 
-	// let register_user = () => {
-	// 	console.log('submit');
-	// 	console.log(platName, platType, platNbrPossible, midiSoir, ingredients, saison, typeViande);
-
-	// 	if (!platName) {
-	// 		alert('Please fill name');
-	// 		return;
-	// 	}
-	// 	if (!platType) {
-	// 		alert('Please fill type');
-	// 		return;
-	// 	}
-	// 	if (!platNbrPossible) {
-	// 		alert('Please fill nbr de plat possible');
-	// 		return;
-	// 	}
-
-	// 	db.transaction(function (tx) {
-	// 		tx.executeSql(
-	// 			'INSERT INTO table_plat (name, type,nbrPossible,midiSoir,ingredients,typeViande,saison) VALUES (?,?,?,?,?,?,?)',
-	// 			[platName, platType, platNbrPossible, midiSoir, ingredients, typeViande, saison],
-	// 			(tx, results) => {
-	// 				console.log('Results', results.rowsAffected);
-	// 				if (results.rowsAffected > 0) {
-	// 					Alert.alert(
-	// 						'Success',
-	// 						'You are Registered Successfully',
-	// 						[
-	// 							{
-	// 								text: 'Ok',
-	// 								onPress: () => navigation.navigate('menu'),
-	// 							},
-	// 						],
-	// 						{cancelable: false},
-	// 					);
-	// 				} else Alert.alert('Registration Failed');
-	// 			},
-	// 		);
-	// 	});
-	// };
-
+	const choisirIngredient =(item)=>{
+		console.log(item)
+		if (!ingredientsChoisi.includes(item)) setIngredientsChoisi([...ingredientsChoisi,item])
+	}
 	return (
 		<div style={{ flex: 1, backgroundColor: "white" }}>
 			<label>recherche</label>
-			<input placeholder="recherche de plat existant" onChange={(platName) => recherche(platName)} maxLength={225} numberOfLines={2} multiline={true} style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
-			<div style={{ backgroundColor: "grey" }}>{platTrouvés&&platTrouvés.map(plat=><div>{plat.nom}</div>)}</div>
+			<div style={{ backgroundColor: "grey" }}>{platTrouvés && platTrouvés.map((plat) => <div>{plat.nom_plat}</div>)}</div>
+			<input placeholder="recherche de plat existant" onChange={(platName) => recherchePlat(platName)} maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
+			<br />
+			<div style={{ backgroundColor: "grey" }}>
+				{ingredientTrouvés &&
+					ingredientTrouvés.map((ingredient) => (
+						<div>
+							<div onClick={()=>choisirIngredient(ingredient)}>{ingredient}</div>
+							<br />
+						</div>
+					))}
+			</div>
+			<input placeholder="quels sont les ingrédients ?" onChange={(platName) => rechercheIngredient(platName)} maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
+			<br />
+			<label>ingredient choisis</label>
+			<div style={{ display: "flex",flexDirection:"column" }}>{ingredientsChoisi.map(item=><div>{item}</div>)}</div>
 			<br />
 			<br />
-			<br />
-			<br />
-			<input placeholder="entrer le nom du plat" onChangeText={(platName) => setPlatName(platName)} maxLength={225} numberOfLines={2} multiline={true} style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
 
-			{/* <Mytextinput
-								placeholder="entrer le type du plat"
-								onChangeText={platType => setPlatType(platType)}
-								maxLength={225}
-								numberOfLines={2}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
-							/>
-							<Mytextinput
-								placeholder="Enter nombre repas possible"
-								onChangeText={platNbrPossible => setPlatNbrPossible(platNbrPossible)}
-								keyboardType="numeric"
-								maxLength={225}
-								numberOfLines={2}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
-
-							/>
-							<Mytextinput
-								placeholder="Plat du midi ou du soir ?"
-								onChangeText={midiSoir => setMidiSoir(midiSoir)}
-								maxLength={225}
-								numberOfLines={2}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
-
-							/>
-							<Mytextinput
-								placeholder="ingredients ?"
-								onChangeText={ingredients => setIngredients(ingredients)}
-								maxLength={225}
-								numberOfLines={5}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
-
-							/>
-							<Mytextinput
-								placeholder="Saison ?"
-								onChangeText={saison => setSaison(saison)}
-								maxLength={225}
-								numberOfLines={2}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
-
-							/>
-							<Mytextinput
-								placeholder="Type de viande ?"
-								onChangeText={typeViande => setTypeViande(typeViande)}
-								maxLength={225}
-								numberOfLines={5}
-								multiline={true}
-								style={{textAlignVertical: 'top', padding: 10,fontSize:25}}
-
-							/> */}
-			<button title="Submit" onPress={() => console.log("coucou")} />
+			<button onClick={() => console.log("coucou")}>VALIDER ?</button>
 		</div>
 	);
 };
