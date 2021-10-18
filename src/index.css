@@ -15,3 +15,9 @@ code {
 input{
   width: 50%;
 }
+.ingredientsItem{
+  background-color: aqua;
+  text-align: center;
+  margin: 0 auto;
+  width: 20%;
+}
