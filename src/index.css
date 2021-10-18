@@ -21,3 +21,23 @@ input{
   margin: 0 auto;
   width: 20%;
 }
+.recherchePlat{
+height: 100VH;
+  display: flex;
+background-color: #FFF2DE;
+justify-content: center;
+align-items: center;
+}
+.recherchePlat input{ 
+  position: absolute;
+bottom: 70%;
+left: 25%;
+}
+.platsTrouvés { 
+position: absolute;
+bottom: 45%;
+left: 45%;
+background-color: white;
+border: 2px solid rgb(25, 25, 25);
+
+}

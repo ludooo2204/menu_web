@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.3
+-- version 4.9.2
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  Dim 17 oct. 2021 à 18:48
--- Version du serveur :  5.7.23
--- Version de PHP :  7.2.10
+-- Généré le :  lun. 18 oct. 2021 à 19:58
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `ingredients` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom_ingredient` varchar(30) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `ingredients`
@@ -71,7 +71,21 @@ INSERT INTO `ingredients` (`id`, `nom_ingredient`) VALUES
 (4, 'lardons fumés'),
 (5, 'chorizo'),
 (6, 'poivron rouge'),
-(7, 'jambon');
+(7, 'jambon'),
+(8, 'pain de mie'),
+(9, 'gruyère'),
+(10, 'farine'),
+(11, 'surimi'),
+(12, 'courgettes'),
+(13, 'tomate'),
+(14, 'sucre'),
+(15, 'pomme de terre'),
+(16, 'mergez'),
+(17, 'semoule'),
+(18, 'semoule epicée'),
+(19, 'légumes pour couscous'),
+(20, 'poulet (haut de cuisse)'),
+(21, 'boulette de boeuf');
 
 -- --------------------------------------------------------
 

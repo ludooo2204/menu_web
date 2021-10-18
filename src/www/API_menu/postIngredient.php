@@ -1,4 +1,5 @@
-<?php
+²<?php
+
 
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Methods: HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS");
@@ -11,27 +12,22 @@ header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Conte
 header("HTTP/1.1 200 OK");
 die();
 }
-$indiceFromJS = file_get_contents(('php://input'));
-// echo $indiceFromJS;
+
+
+	$json = file_get_contents(('php://input'));
+    $object = json_decode($json);
+ 
+    $nom_ingredient = $object->nom_ingredient;
 try {
-   // pour la base sur le cloud
-    // $pdo = new PDO("mysql:host=127.0.0.1;dbname=drpnngev_velo;charset=utf8", "drpnngev_ludo", "q!2R(O9EJss6i0", [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ]);
-    
-    // pour la base en local
     $pdo = new PDO("mysql:host=127.0.0.1;dbname=menu;charset=utf8", "root", "", [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ]);
 
-    if ($indiceFromJS == "") {
-        $query = $pdo->prepare('SELECT * FROM ingredients');
-        $query->execute();
-    } else {
-        $query = $pdo->prepare('SELECT * FROM plats WHERE id = :id');
-        $query->execute(['id' => $indiceFromJS]);
-    }
-    $posts = $query->fetchAll();
-    // print_r($posts);
+//  $pdo = new PDO("mysql:host=127.0.0.1;dbname=drpnngev_api;charset=utf8", "drpnngev_ludo", "q!2R(O9EJss6i0", [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ]);
 
-    header('Content-Type: application/json');
-    echo json_encode($posts);
+
+    $query= $pdo->prepare("INSERT INTO ingredients (nom_ingredient) VALUES('" . $nom_ingredient . "')");
+    $query->execute();
+
+
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
