@@ -71,9 +71,12 @@ const NewPlat = () => {
 		}
 	}, [bddPlats]);
 	const recherchePlat = (plat) => {
-		const resultatDeRecherche = matchSorter(bddPlats, plat.target.value, { keys: ["nom_plat"], threshold: matchSorter.rankings.CONTAINS });
-		console.log(resultatDeRecherche);
-		setPlatTrouvés(resultatDeRecherche);
+		if (plat.target.value != "") {
+			const resultatDeRecherche = matchSorter(bddPlats, plat.target.value, { keys: ["nom_plat"], threshold: matchSorter.rankings.CONTAINS });
+			console.log(resultatDeRecherche);
+			setPlatTrouvés(resultatDeRecherche);
+		}
+		else setPlatTrouvés(null);
 	};
 	const rechercheIngredient = (plat) => {
 		console.log(plat.target.value);
@@ -89,8 +92,6 @@ const NewPlat = () => {
 	};
 	const deselectionnerIngredient = (item) => {
 		// const copie=[...ingredientsChoisi]
-		console.log(item);
-		console.log(ingredientsChoisi);
 		for (let i = 0; i < ingredientsChoisi.length; i++) {
 			const element = ingredientsChoisi[i];
 			if (element.nom == item) ingredientsChoisi.splice(i, 1);
@@ -195,20 +196,28 @@ const NewPlat = () => {
 		setIngredientsChoisi([...copie]);
 	};
 	return (
-		<div style={{ flex: 1, backgroundColor: "blue" }}>
+		<div 
+		// style={{ flex: 1, backgroundColor: "blue" }}
+		>
 			{!isAjoutPlatVisible && (
 				<div className="recherchePlat">
 					<div>
-					<div className="platsTrouvés">{platTrouvés && platTrouvés.map((plat) => <div>{plat.nom_plat}</div>)}</div>
-					<input
-						placeholder="recherche de plat existant"
-						onChange={(platName) => recherchePlat(platName)}
-						maxLength={225}
-						multiline="true"
-						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
-					/>
-					<button onClick={ajouterPlat}>Ajouter un plat</button>
-					<br />
+						<input
+							placeholder="recherche de plat existant"
+							onChange={(platName) => recherchePlat(platName)}
+							maxLength={225}
+							multiline="true"
+							style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
+						/>
+						{platTrouvés && platTrouvés.length !== 0 && (
+							<div className="platsTrouvés">
+								{platTrouvés.map((plat) => (
+									<div className="platTrouvé">{plat.nom_plat}</div>
+								))}
+							</div>
+						)}
+						{platTrouvés && platTrouvés.length == 0 && <button onClick={ajouterPlat}>Ajouter un nouveau plat</button>}
+						<br />
 					</div>
 				</div>
 			)}
