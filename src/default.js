@@ -8,6 +8,7 @@ import {
 } from "./data/calendars.js"; /* ES6 */
 import { ScheduleInfo } from "./data/schedules.js"; /* ES6 */
 import { updatePopupWindowIsAllDayChecked } from "./data/updatePopupWindowIsAllDayChecked.js";
+import { clearConfig } from "dompurify";
 var throttle = require("tui-code-snippet/tricks/throttle");
 const storage = require("electron-json-storage");
 // const dataPath = storage.getDataPath();
@@ -16,12 +17,50 @@ var Chance = require("chance");
 
 // Instantiate Chance so it can be used
 var chance = new Chance();
+let fs =require('fs')
+
+console.log('CalendarList')
+console.log(CalendarList)
 
 // const { app } = require('electron').remote;
 // const p=app.getPath('userData');
 // console.log(p)
 
 let resizeThrottled;
+
+const testludo=()=>console.log("coucou")
+const calendarLudo= document.getElementById('calendar')
+// calendarLudo.addEventListener("drop",(e)=>console.log("e",e))
+document.addEventListener("drop",function(event){
+  event.preventDefault()
+  console.log("drop")
+  const path =event.dataTransfer.files[0].path;
+  console.log(path)
+  fs.readFile(path,'utf8',(err,data)=>{
+    if (err) return console.log(err)
+    console.log('data',data)
+    ///TODO data to saveNewSchedule(data)
+    let test = {
+      title: "ludo",
+      isAllDay: true,
+      start: new Date('2021-10-19'),
+      end: new Date('2021-10-19'),
+      location: "",
+      // raw: {
+      // class: scheduleData.raw["class"]
+      // },
+      // raw: scheduleData.raw,
+      state: "Buzy",
+      calendarId: "22",
+    };
+    saveNewSchedule(test)
+  })
+})
+document.addEventListener("dragover",function(event){
+  event.preventDefault()
+
+})
+console.log("calendarLudo",calendarLudo)
 
 const templates = {
   popupIsAllDay: function (e) {
@@ -108,11 +147,12 @@ export const cal = new Calendar("#calendar", {
 function init() {
   storage.has("calendar", (e, hasKey) => {
     if (e) throw e;
-    // console.log(hasKey);
+    console.log(hasKey);
     if (hasKey) {
       storage.get("calendar", (e, d) => {
         if (e) throw e;
-        // console.log(d);
+
+        console.log(d);
         cal.setCalendars(d);
       });
     } else {
@@ -318,14 +358,14 @@ export function setSchedules() {
   storage.getAll(function (error, data) {
     if (error) throw error;
     try {
-      // console.log("SCHEDULE: ", data);
-      // console.log("CAL: ", cal);
+      console.log("SCHEDULE: ", data);
+      console.log("CAL: ", cal);
 
       Object.values(data).forEach((i) => {
-        // console.log(typeof i);
-        // console.log(i.length);
-        // console.log(i);
-        // console.log(i.raw )
+        console.log(typeof i);
+        console.log(i.length);
+        console.log(i);
+        console.log(i.raw )
         if (i.length === undefined) {
           arr.push({
             id: i.id,
@@ -345,7 +385,7 @@ export function setSchedules() {
           });
         }
       });
-      // console.log([arr[0]]);
+      console.log(arr);
       arr.forEach((task) => {
         // console.log(task);
         cal.createSchedules([task]);

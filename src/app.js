@@ -4,7 +4,7 @@ import * as $ from "jquery";
 
 const storage = require("electron-json-storage");
 const dataPath = storage.getDataPath();
-// console.log(dataPath);
+console.log(dataPath);
 
 const clearStorageBtn = $("#clearStorage");
 let datePicker, selectedCalendar;
@@ -32,7 +32,7 @@ cal.on({
     // console.log("clickDayname", date);
   },
   beforeCreateSchedule: function (e) {
-    // console.log("beforeCreateSchedule", e);
+    console.log("beforeCreateSchedule", e);
     saveNewSchedule(e);
   },
   beforeUpdateSchedule: function (e) {
@@ -164,17 +164,17 @@ $("#btn-new-schedule").on("click", (e) => {
   let calArr = [];
   let storageCal = storage.get("calendar", (e, d) => {
     if (e) console.error(e);
-    // console.log(d);
+    console.log(d);
     calArr.push(d);
   });
-  // console.log(CalendarList);
-  // console.log(calArr);
+  console.log(CalendarList);
+  console.log(calArr);
   storage.get("calendar", (e, cal) => {
     if (e) console.error(e);
     let c = cal.length !== undefined ? cal : CalendarList;
-    // console.log(cal.length);
-    // console.log(cal);
-    // console.log("WHAAAAT");
+    console.log(cal.length);
+    console.log(cal);
+    console.log("WHAAAAT");
     c.forEach((calendar) => {
       // console.log(calendar);
       html.push(
