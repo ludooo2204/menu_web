@@ -203,7 +203,7 @@ const NewPlat = () => {
 				<div className="recherchePlat">
 					<div>
 						<input
-							placeholder="recherche de plat existant"
+							placeholder="rechercher un plat"
 							onChange={(platName) => recherchePlat(platName)}
 							maxLength={225}
 							multiline="true"
@@ -222,7 +222,7 @@ const NewPlat = () => {
 				</div>
 			)}
 			{isAjoutPlatVisible && (
-				<div>
+				<div className="newPlat">
 					<label>Nom du plat</label>
 					<br />
 					<input placeholder="Comment s'appelle ce nouveau plat ?" maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />

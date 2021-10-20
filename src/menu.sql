@@ -45,7 +45,11 @@ INSERT INTO `assoc_plat_ingredients` (`plat`, `ingredient`, `id`) VALUES
 (1, 2, 2),
 (3, 2, 6),
 (3, 3, 8),
-(3, 4, 7);
+(3, 4, 7),
+(4, 7, 9),
+(4, 8, 10),
+(4, 9, 11),
+(5, 10, 12);
 
 -- --------------------------------------------------------
 
@@ -114,7 +118,9 @@ CREATE TABLE IF NOT EXISTS `plats` (
 
 INSERT INTO `plats` (`id`, `nom_plat`, `saison`, `tempsDePreparation`, `typeViande`, `légumesConseillés`, `féculentsConseillés`, `nbrDeRepasPossible`, `midiSoir`, `typePlat`) VALUES
 (1, 'marmitte espagnole', NULL, 2, 'dinde', NULL, NULL, 2, 'midi', '0'),
-(3, 'hachi parmentier', NULL, 2, 'boeuf', NULL, NULL, 2, 'midi', '0');
+(3, 'hachi parmentier', NULL, 2, 'boeuf', NULL, NULL, 2, 'midi', '0'),
+(4, 'croque-monsieur', NULL, 1, 'porc', NULL, NULL, 2, 'midi', '0'),
+(5, 'feuilletés jambon', NULL, 0, 'porc', NULL, NULL, 1, 'soir', '0');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
