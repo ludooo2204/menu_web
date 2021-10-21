@@ -13,15 +13,12 @@ const NewPlat = () => {
 	let [isChoisirTypeViandeVisible, setIsChoisirTypeViandeVisible] = useState(false);
 	let [isChoisirVitesseVisible, setIsChoisirVitesseVisible] = useState(false);
 	let [ingredientAAjouter, setIngredientAAjouter] = useState(null);
-	let [platName, setPlatName] = useState("");
 	let [platType, setPlatType] = useState([]);
 	let [platMidiSoir, setPlatMidiSoir] = useState([]);
 	let [platTypeViande, setPlatTypeViande] = useState([]);
 	let [platVitesse, setPlatVitesse] = useState([]);
 	let [ingredientsChoisi, setIngredientsChoisi] = useState([]);
 	let [saison, setSaison] = useState([]);
-	let [typeViande, setTypeViande] = useState("");
-	let [platNbrPossible, setPlatNbrPossible] = useState("");
 	useEffect(() => {
 		console.log("appel bdd");
 		fetch("http://localhost/API_menu/getPlats.php")
@@ -75,8 +72,7 @@ const NewPlat = () => {
 			const resultatDeRecherche = matchSorter(bddPlats, plat.target.value, { keys: ["nom_plat"], threshold: matchSorter.rankings.CONTAINS });
 			console.log(resultatDeRecherche);
 			setPlatTrouvés(resultatDeRecherche);
-		}
-		else setPlatTrouvés(null);
+		} else setPlatTrouvés(null);
 	};
 	const rechercheIngredient = (plat) => {
 		console.log(plat.target.value);
@@ -88,7 +84,9 @@ const NewPlat = () => {
 	};
 	console.log("ingredientAAjouter", ingredientAAjouter);
 	const choisirIngredient = (item) => {
-		if (!ingredientsChoisi.includes(item)) setIngredientsChoisi([...ingredientsChoisi, { nom: item, quantité: null, unité: null }]);
+		console.log("ingredientsChoisi",ingredientsChoisi)
+		console.log("item",item)
+		if (!ingredientsChoisi.map(e=>e.nom).includes(item)) setIngredientsChoisi([...ingredientsChoisi, { nom: item, quantité: null, unité: null }]);
 	};
 	const deselectionnerIngredient = (item) => {
 		// const copie=[...ingredientsChoisi]
@@ -196,7 +194,7 @@ const NewPlat = () => {
 		setIngredientsChoisi([...copie]);
 	};
 	return (
-		<div 
+		<div
 		// style={{ flex: 1, backgroundColor: "blue" }}
 		>
 			{!isAjoutPlatVisible && (
@@ -330,31 +328,34 @@ const NewPlat = () => {
 					<br />
 					<label>Ingrédients</label>
 					<br />
-					<div style={{ backgroundColor: "grey" }}>
-						{ingredientTrouvés &&
-							ingredientTrouvés.map((ingredient) => (
-								<div>
-									<div onClick={() => choisirIngredient(ingredient)}>{ingredient}</div>
-									<br />
-								</div>
-							))}
-					</div>
+					{console.log(ingredientsChoisi)}
 					<input
-						placeholder="quels sont les ingrédients ?"
+						// placeholder="quels sont les ingrédients ?"
+						placeholder={ingredientsChoisi.length == 0 ? "quels sont les ingrédients ?" : ingredientsChoisi.map(e=>e.nom).toString()}
+
 						onChange={(platName) => rechercheIngredient(platName)}
 						maxLength={225}
 						multiline="true"
 						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 					/>
 					<br />
+					<div className="ingrédientsTrouvé">
+						{ingredientTrouvés &&
+							ingredientTrouvés.map((ingredient) => (
+								<div className="ingrédientTrouvé" onClick={() => choisirIngredient(ingredient)}>
+									{ingredient}
+								</div>
+							))}
+					</div>
 					{ingredientTrouvés && ingredientTrouvés.length == 0 && <button onClick={() => ajouterIngredient(ingredientAAjouter)}>Ajouter un ingredient</button>}
 					<br />
 					<label>ingredient choisis</label>
-					<div style={{ display: "flex", flexDirection: "column" }}>
+					<div className="ingrédientsTrouvéQuantité">
 						{ingredientsChoisi.map((item) => (
 							<div className="ingredientsItem">
 								<div onClick={() => deselectionnerIngredient(item.nom)}>{item.nom}</div>
-								<input type="number" placeholder="quantité à choisir" onChange={(e) => handleChangeQuantité(e, item)}></input>
+								<div style={{display:"flex",justifyContent:"center"}}>
+								<input  className='inputQuantité' type="number" placeholder="quantité ?" onChange={(e) => handleChangeQuantité(e, item)}></input>
 								<select onChange={(e) => handleChangeUnité(e, item)}>
 									<option>unité à choisir</option>
 									<option>ml</option>
@@ -364,6 +365,7 @@ const NewPlat = () => {
 									<option>grammes</option>
 									<option>unité</option>
 								</select>
+								</div>
 							</div>
 						))}
 					</div>
