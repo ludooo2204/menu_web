@@ -14,6 +14,8 @@ const NewPlat = () => {
 	let [isChoisirVitesseVisible, setIsChoisirVitesseVisible] = useState(false);
 	let [ingredientAAjouter, setIngredientAAjouter] = useState(null);
 	let [platType, setPlatType] = useState([]);
+	let [platUrl, setPlatUrl] = useState("");
+	let [platNom, setPlatNom] = useState("");
 	let [platMidiSoir, setPlatMidiSoir] = useState([]);
 	let [platTypeViande, setPlatTypeViande] = useState([]);
 	let [platVitesse, setPlatVitesse] = useState([]);
@@ -84,9 +86,9 @@ const NewPlat = () => {
 	};
 	console.log("ingredientAAjouter", ingredientAAjouter);
 	const choisirIngredient = (item) => {
-		console.log("ingredientsChoisi",ingredientsChoisi)
-		console.log("item",item)
-		if (!ingredientsChoisi.map(e=>e.nom).includes(item)) setIngredientsChoisi([...ingredientsChoisi, { nom: item, quantité: null, unité: null }]);
+		console.log("ingredientsChoisi", ingredientsChoisi);
+		console.log("item", item);
+		if (!ingredientsChoisi.map((e) => e.nom).includes(item)) setIngredientsChoisi([...ingredientsChoisi, { nom: item, quantité: null, unité: null }]);
 	};
 	const deselectionnerIngredient = (item) => {
 		// const copie=[...ingredientsChoisi]
@@ -110,13 +112,47 @@ const NewPlat = () => {
 			},
 			body: JSON.stringify({ nom_ingredient: ingredientAAjouter }),
 		})
-			.then((res) => res.json())
-			.then((res) => console.log(res));
+			.then((res) => {
+				res.json();
+				fetch("http://localhost/API_menu/getIngredients.php")
+					.then((reponse) => reponse.json())
+					.then((data) => {
+						console.log("dataIngredients");
+						console.log(data);
+						setBddIngredients([...new Set(data.map((plat) => plat.nom_ingredient))]);
+					})
+					.catch((fail) => console.log("fail", fail));
+
+				choisirIngredient(ingredientAAjouter);
+				alert("l'ingrédient a été ajouté");
+			})
+			.then((res) => {
+				console.log(res);
+			});
 	};
 	const validerNouveauPlat = () => {
 		setIsAjoutPlatVisible(!isAjoutPlatVisible);
 
 		console.log([platType, saison, platTypeViande, platMidiSoir, platVitesse, ingredientsChoisi]);
+let platToSave={platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl, ingredientsChoisi}
+console.log(platToSave)
+		fetch("http://localhost/API_menu/postPlat.php", {
+			method: "post",
+			headers: {
+				Accept: "application/json, text/plain, */*",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(platToSave),
+		})
+			.then((res) => {
+				res.json();
+				
+			// .then((res) => {
+			// 	console.log(res);
+			}).catch(err=>console.log(err))
+
+		alert("Le plat a bien été ajouté !");
+		// window.location.reload();
 	};
 	const choisirSaisonPopup = () => {
 		setIsChoisirSaisonVisible(!isChoisirSaisonVisible);
@@ -178,6 +214,14 @@ const NewPlat = () => {
 		if (_TypeViande == null) setPlatTypeViande([]);
 		else setPlatTypeViande([...platTypeViande, _TypeViande]);
 	};
+	const choisirUrl = (_url) => {
+		if (_url.target.value == null) setPlatUrl("");
+		else setPlatUrl(_url.target.value);
+	};
+	const choisirNomPlat = (_nom) => {
+		if (_nom.target.value == null) setPlatNom("");
+		else setPlatNom(_nom.target.value);
+	};
 	const handleChangeQuantité = (e, item) => {
 		console.log(e.target.value);
 		const copie = [...ingredientsChoisi];
@@ -223,7 +267,11 @@ const NewPlat = () => {
 				<div className="newPlat">
 					<label>Nom du plat</label>
 					<br />
-					<input placeholder="Comment s'appelle ce nouveau plat ?" maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
+					<input 
+							placeholder={platNom == "" ? "Comment s'appelle ce nouveau plat ?" : platNom.toString()}
+							onChange={(nom) => choisirNomPlat(nom)}
+					placeholder="Comment s'appelle ce nouveau plat ?" 
+					maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
 					<br />
 
 					<label>Saison</label>
@@ -324,15 +372,20 @@ const NewPlat = () => {
 
 					<label>Recette</label>
 					<br />
-					<input placeholder="Ce plat a t il une recette en ligne ?" maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
+					<input
+						placeholder={platUrl== "" ? "Ce plat a t il une recette en ligne ?" : platUrl.toString()}
+						onChange={(url) => choisirUrl(url)}
+						maxLength={225}
+						multiline="true"
+						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
+					/>
 					<br />
 					<label>Ingrédients</label>
 					<br />
 					{console.log(ingredientsChoisi)}
 					<input
 						// placeholder="quels sont les ingrédients ?"
-						placeholder={ingredientsChoisi.length == 0 ? "quels sont les ingrédients ?" : ingredientsChoisi.map(e=>e.nom).toString()}
-
+						placeholder={ingredientsChoisi.length == 0 ? "quels sont les ingrédients ?" : ingredientsChoisi.map((e) => e.nom).toString()}
 						onChange={(platName) => rechercheIngredient(platName)}
 						maxLength={225}
 						multiline="true"
@@ -354,17 +407,17 @@ const NewPlat = () => {
 						{ingredientsChoisi.map((item) => (
 							<div className="ingredientsItem">
 								<div onClick={() => deselectionnerIngredient(item.nom)}>{item.nom}</div>
-								<div style={{display:"flex",justifyContent:"center"}}>
-								<input  className='inputQuantité' type="number" placeholder="quantité ?" onChange={(e) => handleChangeQuantité(e, item)}></input>
-								<select onChange={(e) => handleChangeUnité(e, item)}>
-									<option>unité à choisir</option>
-									<option>ml</option>
-									<option>cl</option>
-									<option>dl</option>
-									<option>l</option>
-									<option>grammes</option>
-									<option>unité</option>
-								</select>
+								<div style={{ display: "flex", justifyContent: "center" }}>
+									<input className="inputQuantité" type="number" placeholder="quantité ?" onChange={(e) => handleChangeQuantité(e, item)}></input>
+									<select onChange={(e) => handleChangeUnité(e, item)}>
+										<option>unité à choisir</option>
+										<option>ml</option>
+										<option>cl</option>
+										<option>dl</option>
+										<option>l</option>
+										<option>grammes</option>
+										<option>unité</option>
+									</select>
 								</div>
 							</div>
 						))}
