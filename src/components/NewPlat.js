@@ -133,8 +133,9 @@ const NewPlat = () => {
 	const validerNouveauPlat = () => {
 		setIsAjoutPlatVisible(!isAjoutPlatVisible);
 
-		console.log([platType, saison, platTypeViande, platMidiSoir, platVitesse, ingredientsChoisi]);
-let platToSave={platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl, ingredientsChoisi}
+		// console.log([platType, saison, platTypeViande, platMidiSoir, platVitesse, ingredientsChoisi]);
+let platToSave={platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl}
+console.log("platToSave")
 console.log(platToSave)
 		fetch("http://localhost/API_menu/postPlat.php", {
 			method: "post",
@@ -146,10 +147,10 @@ console.log(platToSave)
 		})
 			.then((res) => {
 				res.json();
-				
+				console.log("tout va bien")
 			// .then((res) => {
 			// 	console.log(res);
-			}).catch(err=>console.log(err))
+			}).catch(err=>console.log("err,err"))
 
 		alert("Le plat a bien été ajouté !");
 		// window.location.reload();
