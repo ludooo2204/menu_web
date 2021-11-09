@@ -1,3 +1,6 @@
+///todo ligne 572 ajout value? pour ajouter les valeurs de quantité et d'unité lors de la lecture d'un plat existant. voir debug ligne343
+
+
 import React, { useState, useEffect } from "react";
 import { matchSorter } from "match-sorter";
 
@@ -23,7 +26,6 @@ const NewPlat = () => {
 	let [platNbrPossible, setPlatNbrPossible] = useState(1);
 	let [ingredientsChoisi, setIngredientsChoisi] = useState([]);
 	let [saison, setSaison] = useState([]);
-	let [platToReadAndUpdate, setPlatToReadAndUpdate] = useState(null);
 	useEffect(() => {
 		console.log("appel bdd");
 		fetch("http://lomano.go.yo.fr/api/menus/getPlats.php")
@@ -261,17 +263,101 @@ const NewPlat = () => {
 
 const readAndUpdatePlat=(_plat)=>{
 	console.log(_plat)
-	setPlatToReadAndUpdate(_plat)
+	const test=(_plat.ingredients.split(','))
+	test.pop()
+	console.log(test)
+	console.log(test.length/3)
+	let testIng
+		if (test.length/3==1) {
+			testIng=[{  nom: test[0], quantité: test[1], unité: test[2] }]
+		}
+		if (test.length/3==2) {
+			testIng=[
+				{  nom: test[0], quantité: test[1], unité: test[2] },
+				{  nom: test[3], quantité: test[4], unité: test[5] }
+		]
+		}
+		if (test.length/3==3) {
+			testIng=[
+
+			{  nom: test[0], quantité: test[1], unité: test[2] },
+				{  nom: test[3], quantité: test[4], unité: test[5] },
+				{  nom: test[6], quantité: test[7], unité: test[8] }
+			]
+		}
+		if (test.length/3==4) {
+			testIng=[
+
+				{  nom: test[0], quantité: test[1], unité: test[2] },
+					{  nom: test[3], quantité: test[4], unité: test[5] },
+					{  nom: test[6], quantité: test[7], unité: test[8] },
+					{  nom: test[9], quantité: test[10], unité: test[11] }
+				]
+		}
+		if (test.length/3==5) {
+			testIng=[
+
+				{  nom: test[0], quantité: test[1], unité: test[2] },
+					{  nom: test[3], quantité: test[4], unité: test[5] },
+					{  nom: test[6], quantité: test[7], unité: test[8] },
+					{  nom: test[9], quantité: test[10], unité: test[11] },
+					{  nom: test[12], quantité: test[13], unité: test[14] }
+				]
+		}
+		if (test.length/3==6) {
+			testIng=[
+
+				{  nom: test[0], quantité: test[1], unité: test[2] },
+					{  nom: test[3], quantité: test[4], unité: test[5] },
+					{  nom: test[6], quantité: test[7], unité: test[8] },
+					{  nom: test[9], quantité: test[10], unité: test[11] },
+					{  nom: test[12], quantité: test[13], unité: test[14] },
+					{  nom: test[15], quantité: test[16], unité: test[17] }
+				]
+		}
+		if (test.length/3==7) {
+			testIng=[
+
+				{  nom: test[0], quantité: test[1], unité: test[2] },
+					{  nom: test[3], quantité: test[4], unité: test[5] },
+					{  nom: test[6], quantité: test[7], unité: test[8] },
+					{  nom: test[9], quantité: test[10], unité: test[11] },
+					{  nom: test[12], quantité: test[13], unité: test[14] },
+					{  nom: test[15], quantité: test[16], unité: test[17] },
+					{  nom: test[18], quantité: test[19], unité: test[20] }
+				]
+		}
+		if (test.length/3==8) {
+			testIng=[
+
+				{  nom: test[0], quantité: test[1], unité: test[2] },
+					{  nom: test[3], quantité: test[4], unité: test[5] },
+					{  nom: test[6], quantité: test[7], unité: test[8] },
+					{  nom: test[9], quantité: test[10], unité: test[11] },
+					{  nom: test[12], quantité: test[13], unité: test[14] },
+					{  nom: test[15], quantité: test[16], unité: test[17] },
+					{  nom: test[18], quantité: test[19], unité: test[20] },
+					{  nom: test[21], quantité: test[22], unité: test[23] }
+				]
+		}
+	console.log(testIng)
+	
+setIsAjoutPlatVisible(true)
+setPlatNom(_plat.nom_plat);
+setPlatType(_plat.typePlat);
+setSaison(_plat.saison==null?[]:_plat.saison);
+setPlatTypeViande(_plat.typeViande);
+setPlatNbrPossible(_plat.nbrDeRepasPossible==null?1:_plat.nbrDeRepasPossible);
+setPlatMidiSoir(_plat.midiSoir);
+setPlatVitesse(_plat.tempsDePreparation);
+setPlatUrl(_plat.url==null?"":_plat.url);
+setIngredientsChoisi(_plat.ingredients==null?"":testIng);
+
+
 }
 //composant interne
 
-const ReadAndUpdate=()=>{
-	console.log("platToReadAndUpdate")
-	console.log(platToReadAndUpdate)
-return (
-	<div>"coucou"</div>
-)
-} 
+
 
 	return (
 		<div>
@@ -285,16 +371,14 @@ return (
 							multiline="true"
 							style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 						/>
-						{platTrouvés && platTrouvés.length !== 0 && !platToReadAndUpdate&& (
+						{platTrouvés && platTrouvés.length !== 0 && (
 							<div className="platsTrouvés">
 								{platTrouvés.map((plat) => (
 									<div className="platTrouvé" onClick={()=>readAndUpdatePlat(plat)}>{plat.nom_plat}</div>
 								))}
 							</div>
 						)}
-						{
-							platToReadAndUpdate&&(<ReadAndUpdate />)
-						}
+						
 						{platTrouvés && platTrouvés.length == 0 && <button onClick={ajouterPlat}>Ajouter un nouveau plat</button>}
 						<br />
 					</div>
@@ -459,7 +543,6 @@ return (
 					<br />
 					<label>Ingrédients</label>
 					<br />
-					{console.log(ingredientsChoisi)}
 					<input
 						// placeholder="quels sont les ingrédients ?"
 						placeholder={ingredientsChoisi.length == 0 ? "quels sont les ingrédients ?" : ingredientsChoisi.map((e) => e.nom).toString()}
@@ -481,7 +564,7 @@ return (
 					<br />
 					<label>ingredient choisis</label>
 					<div className="ingrédientsTrouvéQuantité">
-						{ingredientsChoisi.map((item) => (
+						{ingredientsChoisi && ingredientsChoisi.map((item) => (
 							<div className="ingredientsItem">
 								<div onClick={() => deselectionnerIngredient(item.nom)}>{item.nom}</div>
 								<div style={{ display: "flex", justifyContent: "center" }}>
