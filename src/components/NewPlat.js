@@ -12,47 +12,29 @@ const NewPlat = () => {
 	let [isChoisirMidiSoirVisible, setIsChoisirMidiSoirVisible] = useState(false);
 	let [isChoisirTypeViandeVisible, setIsChoisirTypeViandeVisible] = useState(false);
 	let [isChoisirVitesseVisible, setIsChoisirVitesseVisible] = useState(false);
+	let [isChoisirNbrPossibleVisible, setIsChoisirNbrPossibleVisible] = useState(false);
 	let [ingredientAAjouter, setIngredientAAjouter] = useState(null);
 	let [platType, setPlatType] = useState([]);
 	let [platUrl, setPlatUrl] = useState("");
 	let [platNom, setPlatNom] = useState("");
 	let [platMidiSoir, setPlatMidiSoir] = useState([]);
 	let [platTypeViande, setPlatTypeViande] = useState([]);
-	let [platVitesse, setPlatVitesse] = useState([]);
+	let [platVitesse, setPlatVitesse] = useState("");
+	let [platNbrPossible, setPlatNbrPossible] = useState(1);
 	let [ingredientsChoisi, setIngredientsChoisi] = useState([]);
 	let [saison, setSaison] = useState([]);
+	let [platToReadAndUpdate, setPlatToReadAndUpdate] = useState(null);
 	useEffect(() => {
 		console.log("appel bdd");
-		fetch("http://localhost/API_menu/getPlats.php")
+		fetch("http://lomano.go.yo.fr/api/menus/getPlats.php")
+			// fetch("http://localhost/API_menu/getPlats.php")
 			.then((reponse) => reponse.json())
 			.then((data) => {
 				console.log("data");
 				console.log(data);
-				const platUnique = new Set(data.map((plat) => plat.nom_plat));
-				let platsAvecIngredient = [];
-				for (const iterator of platUnique) {
-					let ingredients = [];
-					for (const iterator2 of data) {
-						if (iterator2.nom_plat == iterator) ingredients.push(iterator2.nom_ingredient);
-					}
-					// console.log(iterator);
-					const platAvecIngredient = data.filter((e) => e.nom_plat == iterator)[0];
-					platsAvecIngredient.push({
-						nom_plat: platAvecIngredient.nom_plat,
-						féculentsConseillés: platAvecIngredient.féculentsConseillés,
-						légumesConseillés: platAvecIngredient.légumesConseillés,
-						midiSoir: platAvecIngredient.midiSoir,
-						nbrDeRepasPossible: platAvecIngredient.nbrDeRepasPossible,
-						ingredients,
-						saison: platAvecIngredient.saison,
-						tempsDePreparation: platAvecIngredient.tempsDePreparation,
-						typePlat: platAvecIngredient.typePlat,
-						typeViande: platAvecIngredient.typeViande,
-					});
-					// console.log(platsAvecIngredient);
-				}
-				setBddPlats(platsAvecIngredient);
+				setBddPlats(data);
 			})
+
 			.catch((fail) => console.log("fail", fail));
 		fetch("http://localhost/API_menu/getIngredients.php")
 			.then((reponse) => reponse.json())
@@ -64,18 +46,17 @@ const NewPlat = () => {
 			.catch((fail) => console.log("fail", fail));
 	}, []);
 
-	useEffect(() => {
-		if (bddPlats) {
-			console.log(bddPlats);
-		}
-	}, [bddPlats]);
 	const recherchePlat = (plat) => {
+		console.log(plat.target.value);
+		console.log(bddPlats);
 		if (plat.target.value != "") {
 			const resultatDeRecherche = matchSorter(bddPlats, plat.target.value, { keys: ["nom_plat"], threshold: matchSorter.rankings.CONTAINS });
 			console.log(resultatDeRecherche);
 			setPlatTrouvés(resultatDeRecherche);
+			setPlatNom(plat.target.value);
 		} else setPlatTrouvés(null);
 	};
+
 	const rechercheIngredient = (plat) => {
 		console.log(plat.target.value);
 		console.log(bddIngredients);
@@ -84,25 +65,25 @@ const NewPlat = () => {
 		setIngredientTrouvés(resultatDeRecherche);
 		setIngredientAAjouter(plat.target.value);
 	};
-	console.log("ingredientAAjouter", ingredientAAjouter);
+
 	const choisirIngredient = (item) => {
 		console.log("ingredientsChoisi", ingredientsChoisi);
 		console.log("item", item);
 		if (!ingredientsChoisi.map((e) => e.nom).includes(item)) setIngredientsChoisi([...ingredientsChoisi, { nom: item, quantité: null, unité: null }]);
 	};
+
 	const deselectionnerIngredient = (item) => {
-		// const copie=[...ingredientsChoisi]
 		for (let i = 0; i < ingredientsChoisi.length; i++) {
 			const element = ingredientsChoisi[i];
 			if (element.nom == item) ingredientsChoisi.splice(i, 1);
 		}
-		// console.log(copie)
-		// console.log(elementSupprimé)
 		setIngredientsChoisi([...ingredientsChoisi]);
 	};
+
 	const ajouterPlat = () => {
 		setIsAjoutPlatVisible(!isAjoutPlatVisible);
 	};
+
 	const ajouterIngredient = () => {
 		fetch("http://localhost/API_menu/postIngredient.php", {
 			method: "post",
@@ -132,12 +113,20 @@ const NewPlat = () => {
 	};
 	const validerNouveauPlat = () => {
 		setIsAjoutPlatVisible(!isAjoutPlatVisible);
-
-		// console.log([platType, saison, platTypeViande, platMidiSoir, platVitesse, ingredientsChoisi]);
-let platToSave={platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl}
-console.log("platToSave")
-console.log(platToSave)
-		fetch("http://localhost/API_menu/postPlat.php", {
+		let ingredientsChoisiString = "";
+		for (const iterator of ingredientsChoisi) {
+			ingredientsChoisiString += iterator.nom;
+			ingredientsChoisiString += ",";
+			ingredientsChoisiString += iterator.quantité;
+			ingredientsChoisiString += ",";
+			ingredientsChoisiString += iterator.unité;
+			ingredientsChoisiString += ",";
+		}
+		let platToSave = { platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl,platNbrPossible, ingredientsChoisi: ingredientsChoisiString };
+		console.log("platToSave");
+		console.log(platToSave);
+		// fetch("http://localhost/API_menu/postPlat.php", {
+		fetch("http://lomano.go.yo.fr/api/menus/postPlat.php", {
 			method: "post",
 			headers: {
 				Accept: "application/json, text/plain, */*",
@@ -147,13 +136,23 @@ console.log(platToSave)
 		})
 			.then((res) => {
 				res.json();
-				console.log("tout va bien")
-			// .then((res) => {
-			// 	console.log(res);
-			}).catch(err=>console.log("err,err"))
-
-		alert("Le plat a bien été ajouté !");
-		// window.location.reload();
+				console.log("tout va bien");
+				setPlatNom("");
+				setPlatType([]);
+				setSaison([]);
+				setPlatTypeViande([]);
+				setPlatNbrPossible(1);
+				setPlatMidiSoir([]);
+				setPlatVitesse("");
+				setPlatUrl("");
+				setIngredientsChoisi([]);
+				setIngredientTrouvés(null);
+				alert("Le plat a bien été ajouté !");
+				window.location.reload();
+				// .then((res) => {
+				// 	console.log(res);
+			})
+			.catch((err) => console.log("err,err"));
 	};
 	const choisirSaisonPopup = () => {
 		setIsChoisirSaisonVisible(!isChoisirSaisonVisible);
@@ -161,6 +160,7 @@ console.log(platToSave)
 		setIsChoisirMidiSoirVisible(false);
 		setIsChoisirVitesseVisible(false);
 		setIsChoisirTypeViandeVisible(false);
+		setIsChoisirNbrPossibleVisible(false)
 	};
 	const choisirSaison = (_saison) => {
 		console.log(`le choix de la saison est ${_saison}`);
@@ -173,6 +173,8 @@ console.log(platToSave)
 		setIsChoisirMidiSoirVisible(false);
 		setIsChoisirVitesseVisible(false);
 		setIsChoisirTypeViandeVisible(false);
+		setIsChoisirNbrPossibleVisible(false)
+
 	};
 	const choisirType = (_type) => {
 		console.log(`le choix du type est ${_type}`);
@@ -185,6 +187,8 @@ console.log(platToSave)
 		setIsChoisirSaisonVisible(false);
 		setIsChoisirVitesseVisible(false);
 		setIsChoisirTypeViandeVisible(false);
+		setIsChoisirNbrPossibleVisible(false)
+
 	};
 	const choisirMidiSoir = (_MidiSoir) => {
 		console.log(`le choix du MidiSoir est ${_MidiSoir}`);
@@ -197,11 +201,25 @@ console.log(platToSave)
 		setIsChoisirTypeVisible(false);
 		setIsChoisirSaisonVisible(false);
 		setIsChoisirTypeViandeVisible(false);
+		setIsChoisirNbrPossibleVisible(false)
+
 	};
 	const choisirVitesse = (_Vitesse) => {
 		console.log(`le choix du Vitesse est ${_Vitesse}`);
 		// if (_Vitesse==null) setPlatVitesse([])
 		setPlatVitesse(_Vitesse);
+	};
+	const choisirNbrPossiblePopup = () => {
+		 setIsChoisirNbrPossibleVisible(!isChoisirNbrPossibleVisible);
+		setIsChoisirVitesseVisible(false);
+		setIsChoisirMidiSoirVisible(false);
+		setIsChoisirTypeVisible(false);
+		setIsChoisirSaisonVisible(false);
+		setIsChoisirTypeViandeVisible(false);
+	};
+	const choisirNbrPossible = (_nbr) => {
+		// if (_Vitesse==null) setPlatVitesse([])
+		setPlatNbrPossible(_nbr);
 	};
 	const choisirTypeViandePopup = () => {
 		setIsChoisirTypeViandeVisible(!isChoisirTypeViandeVisible);
@@ -209,6 +227,8 @@ console.log(platToSave)
 		setIsChoisirMidiSoirVisible(false);
 		setIsChoisirTypeVisible(false);
 		setIsChoisirSaisonVisible(false);
+		setIsChoisirNbrPossibleVisible(false)
+
 	};
 	const choisirTypeViande = (_TypeViande) => {
 		console.log(`le choix du TypeViande est ${_TypeViande}`);
@@ -238,10 +258,23 @@ console.log(platToSave)
 		copie[ingredientsChoisi.indexOf(item)].unité = e.target.value;
 		setIngredientsChoisi([...copie]);
 	};
+
+const readAndUpdatePlat=(_plat)=>{
+	console.log(_plat)
+	setPlatToReadAndUpdate(_plat)
+}
+//composant interne
+
+const ReadAndUpdate=()=>{
+	console.log("platToReadAndUpdate")
+	console.log(platToReadAndUpdate)
+return (
+	<div>"coucou"</div>
+)
+} 
+
 	return (
-		<div
-		// style={{ flex: 1, backgroundColor: "blue" }}
-		>
+		<div>
 			{!isAjoutPlatVisible && (
 				<div className="recherchePlat">
 					<div>
@@ -252,13 +285,16 @@ console.log(platToSave)
 							multiline="true"
 							style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 						/>
-						{platTrouvés && platTrouvés.length !== 0 && (
+						{platTrouvés && platTrouvés.length !== 0 && !platToReadAndUpdate&& (
 							<div className="platsTrouvés">
 								{platTrouvés.map((plat) => (
-									<div className="platTrouvé">{plat.nom_plat}</div>
+									<div className="platTrouvé" onClick={()=>readAndUpdatePlat(plat)}>{plat.nom_plat}</div>
 								))}
 							</div>
 						)}
+						{
+							platToReadAndUpdate&&(<ReadAndUpdate />)
+						}
 						{platTrouvés && platTrouvés.length == 0 && <button onClick={ajouterPlat}>Ajouter un nouveau plat</button>}
 						<br />
 					</div>
@@ -268,11 +304,15 @@ console.log(platToSave)
 				<div className="newPlat">
 					<label>Nom du plat</label>
 					<br />
-					<input 
-							placeholder={platNom == "" ? "Comment s'appelle ce nouveau plat ?" : platNom.toString()}
-							onChange={(nom) => choisirNomPlat(nom)}
-					placeholder="Comment s'appelle ce nouveau plat ?" 
-					maxLength={225} multiline="true" style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }} />
+					<input
+						placeholder={platNom == "" ? "Comment s'appelle ce nouveau plat ?" : platNom.toString()}
+						onChange={(nom) => choisirNomPlat(nom)}
+						// placeholder="Comment s'appelle ce nouveau plat ?"
+						maxLength={225}
+						multiline="true"
+						autoFocus
+						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
+					/>
 					<br />
 
 					<label>Saison</label>
@@ -282,6 +322,7 @@ console.log(platToSave)
 						onFocus={choisirSaisonPopup}
 						maxLength={225}
 						multiline="true"
+						// onBlur={() => setIsChoisirSaisonVisible(false)}
 						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 					/>
 					<br />
@@ -291,7 +332,8 @@ console.log(platToSave)
 							<button onClick={() => choisirSaison("automne")}>automne</button>
 							<button onClick={() => choisirSaison("hiver")}>hiver</button>
 							<button onClick={() => choisirSaison("printemps")}>printemps</button>
-							<button onClick={() => choisirSaison(null)}>Pas de saison particulière</button>
+							<button onClick={() => choisirSaison(null)}>RAZ</button>
+							{/* <button onClick={() => choisirSaison(null)}>Pas de saison particulière</button> */}
 						</div>
 					)}
 					<label>Type</label>
@@ -301,6 +343,7 @@ console.log(platToSave)
 						onFocus={choisirTypePopup}
 						maxLength={225}
 						multiline="true"
+						// onBlur={() => setIsChoisirTypeVisible(false)}
 						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 					/>
 					<br />
@@ -311,7 +354,7 @@ console.log(platToSave)
 							<button onClick={() => choisirType("vegetarien")}>vegetarien</button>
 							<button onClick={() => choisirType("light")}>light</button>
 							<button onClick={() => choisirType("extra")}>extra</button>
-							<button onClick={() => choisirType(null)}>Pas de type particulier</button>
+							<button onClick={() => choisirType(null)}>RAZ</button>
 						</div>
 					)}
 					<label>Midi/Soir</label>
@@ -321,13 +364,14 @@ console.log(platToSave)
 						maxLength={225}
 						onFocus={choisirMidiSoirPopup}
 						multiline="true"
+						// onBlur={() => setIsChoisirMidiSoirVisible(false)}
 						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 					/>
 					{isChoisirMidiSoirVisible && (
 						<div>
 							<button onClick={() => choisirMidiSoir("midi")}>midi</button>
 							<button onClick={() => choisirMidiSoir("soir")}>soir</button>
-							<button onClick={() => choisirMidiSoir(null)}>peu importe</button>
+							<button onClick={() => choisirMidiSoir(null)}>RAZ</button>
 						</div>
 					)}
 					<br />
@@ -337,6 +381,7 @@ console.log(platToSave)
 						placeholder={platVitesse.length == 0 ? "Ce plat est il rapide a préparer ?" : platVitesse.toString()}
 						maxLength={225}
 						onFocus={choisirVitessePopup}
+						// onBlur={() => setIsChoisirVitesseVisible(false)}
 						multiline="true"
 						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 					/>
@@ -350,6 +395,36 @@ console.log(platToSave)
 					)}
 					<br />
 
+
+
+
+
+					<label>Nombre de repas possible</label>
+					<br />
+					<input
+						placeholder={platNbrPossible== 1 ? "Combien de repas possible ? (1 par défaut)" : platNbrPossible.toString()}
+						maxLength={225}
+						onFocus={choisirNbrPossiblePopup}
+						multiline="true"
+						// onBlur={() => setIsChoisirNbrPossibleVisible(false)}
+						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
+					/>
+					{isChoisirNbrPossibleVisible && (
+						<div>
+							<button onClick={() => choisirNbrPossible(1)}>1</button>
+							<button onClick={() => choisirNbrPossible(2)}>2</button>
+							<button onClick={() => choisirNbrPossible(3)}>3</button>
+						
+						</div>
+					)}
+					<br />
+
+
+
+
+
+
+
 					<label>Type de viande</label>
 					<br />
 					<input
@@ -357,6 +432,7 @@ console.log(platToSave)
 						maxLength={225}
 						onFocus={choisirTypeViandePopup}
 						multiline="true"
+						// onBlur={() => setIsChoisirTypeViandeVisible(false)}
 						style={{ textAlignVertical: "top", padding: 10, fontSize: 25 }}
 					/>
 					{isChoisirTypeViandeVisible && (
@@ -366,7 +442,7 @@ console.log(platToSave)
 							<button onClick={() => choisirTypeViande("boeuf")}>boeuf</button>
 							<button onClick={() => choisirTypeViande("porc")}>porc</button>
 							<button onClick={() => choisirTypeViande("végétarien")}>végétarien</button>
-							<button onClick={() => choisirTypeViande(null)}>peu importe</button>
+							<button onClick={() => choisirTypeViande(null)}>RAZ</button>
 						</div>
 					)}
 					<br />
@@ -374,7 +450,7 @@ console.log(platToSave)
 					<label>Recette</label>
 					<br />
 					<input
-						placeholder={platUrl== "" ? "Ce plat a t il une recette en ligne ?" : platUrl.toString()}
+						placeholder={platUrl == "" ? "Ce plat a t il une recette en ligne ?" : platUrl.toString()}
 						onChange={(url) => choisirUrl(url)}
 						maxLength={225}
 						multiline="true"
