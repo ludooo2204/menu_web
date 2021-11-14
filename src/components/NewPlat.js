@@ -32,8 +32,8 @@ const NewPlat = () => {
 
 	useEffect(() => {
 		console.log("appel bdd");
-		fetch("http://lomano.go.yo.fr/api/menus/getPlats.php")
-			// fetch("http://localhost/API_menu/getPlats.php")
+		fetch("https://lomano.go.yo.fr/api/menus/getPlats.php")
+			// fetch("https://localhost/API_menu/getPlats.php")
 			.then((reponse) => reponse.json())
 			.then((data) => {
 				console.log("data");
@@ -42,8 +42,8 @@ const NewPlat = () => {
 			})
 
 			.catch((fail) => console.log("fail", fail));
-		fetch("http://lomano.go.yo.fr/api/menus/getIngredients.php")
-			// fetch("http://localhost/API_menu/getIngredients.php")
+		fetch("https://lomano.go.yo.fr/api/menus/getIngredients.php")
+			// fetch("https://localhost/API_menu/getIngredients.php")
 			.then((reponse) => reponse.json())
 			.then((data) => {
 				console.log("dataIngredients");
@@ -92,8 +92,8 @@ const NewPlat = () => {
 	};
 
 	const ajouterIngredient = () => {
-		fetch("http://lomano.go.yo.fr/api/menus/postIngredient.php", {
-			// fetch("http://localhost/API_menu/postIngredient.php", {
+		fetch("https://lomano.go.yo.fr/api/menus/postIngredient.php", {
+			// fetch("https://localhost/API_menu/postIngredient.php", {
 			method: "post",
 			headers: {
 				Accept: "application/json, text/plain, */*",
@@ -103,8 +103,8 @@ const NewPlat = () => {
 		})
 			.then((res) => {
 				res.json();
-				// fetch("http://localhost/API_menu/getIngredients.php")
-				fetch("http://lomano.go.yo.fr/api/menus/getIngredients.php")
+				// fetch("https://localhost/API_menu/getIngredients.php")
+				fetch("https://lomano.go.yo.fr/api/menus/getIngredients.php")
 					.then((reponse) => reponse.json())
 					.then((data) => {
 						console.log("dataIngredients");
@@ -134,8 +134,8 @@ const NewPlat = () => {
 		let platToSave = { platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl, platNbrPossible, ingredientsChoisi: ingredientsChoisiString };
 		console.log("platToSave");
 		console.log(platToSave);
-		// fetch("http://localhost/API_menu/postPlat.php", {
-		fetch("http://lomano.go.yo.fr/api/menus/postPlat.php", {
+		// fetch("https://localhost/API_menu/postPlat.php", {
+		fetch("https://lomano.go.yo.fr/api/menus/postPlat.php", {
 			method: "post",
 			headers: {
 				Accept: "application/json, text/plain, */*",
@@ -367,7 +367,7 @@ const NewPlat = () => {
 		console.log("SUPPRESIIO?");
 		console.log("id =>", id);
 
-		fetch("http://lomano.go.yo.fr/api/menus/deletePlat.php", {
+		fetch("https://lomano.go.yo.fr/api/menus/deletePlat.php", {
 			method: "post",
 			headers: {
 				Accept: "application/json, text/plain, */*",
@@ -388,6 +388,25 @@ const NewPlat = () => {
 	};
 	const hover = (_plat) => {
 		console.log(_plat);
+		if (_plat.ingredients) {
+			const arrayIngredients = _plat.ingredients.split(",");
+			arrayIngredients.pop();
+			console.log(arrayIngredients);
+			let stringIngredients=""
+			console.log(arrayIngredients.length)
+			if (arrayIngredients.length>0)		stringIngredients += arrayIngredients[1]+" "+arrayIngredients[2]+" de "+arrayIngredients[0]
+			if (arrayIngredients.length>3)		stringIngredients +=" ; "+ arrayIngredients[4]+" "+arrayIngredients[5]+" de "+arrayIngredients[3]
+			if (arrayIngredients.length>6)		stringIngredients +=" ; "+ arrayIngredients[7]+" "+arrayIngredients[8]+" de "+arrayIngredients[6]
+			if (arrayIngredients.length>9)		stringIngredients +=" ; "+ arrayIngredients[10]+" "+arrayIngredients[11]+" de "+arrayIngredients[9]
+			if (arrayIngredients.length>12)		stringIngredients +=" ; "+ arrayIngredients[13]+" "+arrayIngredients[14]+" de "+arrayIngredients[12]
+			if (arrayIngredients.length>15)		stringIngredients +=" ; "+ arrayIngredients[16]+" "+arrayIngredients[17]+" de "+arrayIngredients[15]
+			if (arrayIngredients.length>18)		stringIngredients +=" ; "+ arrayIngredients[19]+" "+arrayIngredients[20]+" de "+arrayIngredients[18]
+			if (arrayIngredients.length>21)		stringIngredients +=" ; "+ arrayIngredients[22]+" "+arrayIngredients[23]+" de "+arrayIngredients[21]
+			if (arrayIngredients.length>24)		stringIngredients +=" ; "+ arrayIngredients[25]+" "+arrayIngredients[26]+" de "+arrayIngredients[24]
+			if (arrayIngredients.length>27)		stringIngredients +=" ; "+ arrayIngredients[28]+" "+arrayIngredients[29]+" de "+arrayIngredients[27]
+			console.log(stringIngredients)
+			_plat.stringIngredients=stringIngredients
+		}
 		setHover(true);
 		setHoverPlat(_plat);
 	};
@@ -410,8 +429,8 @@ const NewPlat = () => {
 		let platToSave = { platNom, platType, saison, platTypeViande, platMidiSoir, platVitesse, platUrl, platNbrPossible, ingredientsChoisi: ingredientsChoisiString, id };
 		console.log("platToSave");
 		console.log(platToSave);
-		// fetch("http://localhost/API_menu/postPlat.php", {
-		fetch("http://lomano.go.yo.fr/api/menus/updatePlat.php", {
+		// fetch("httpss://localhost/API_menu/postPlat.php", {
+		fetch("httpss://lomano.go.yo.fr/api/menus/updatePlat.php", {
 			method: "post",
 			headers: {
 				Accept: "application/json, text/plain, */*",
@@ -558,32 +577,55 @@ const NewPlat = () => {
 						/>
 						{isHover && (
 							<div className="hovered">
-								<div>{hoverPlat.nom_plat}</div>
+								<div style={{ fontWeight: 900, fontSize: 30 }}>{hoverPlat.nom_plat}</div>
 								<div>
-									<div className="titreHover">ingredient :</div>
-									<div>{hoverPlat.ingredients}</div>
+									<span className="titreHover">ingredient :</span>
+									<span>{hoverPlat.stringIngredients}</span>
 								</div>
-								<div>{hoverPlat.saison}</div>
-								<div>{hoverPlat.typePlat}</div>
-								<div>{hoverPlat.typeViande}</div>
+								<div>
+									<span className="titreHover">saison :</span>
+									<span>{hoverPlat.saison}</span>
+								</div>
+								<div>
+									<span className="titreHover">nbrDeRepasPossible :</span>
+									<span>{hoverPlat.nbrDeRepasPossible}</span>
+								</div>
+								<div>
+									<span className="titreHover">midiSoir :</span>
+									<span>{hoverPlat.midiSoir}</span>
+								</div>
+								<div>
+									<span className="titreHover">tempsDePreparation :</span>
+									<span>{hoverPlat.tempsDePreparation}</span>
+								</div>
+								<div>
+									<span className="titreHover">recette :</span>
+									<a target="_blank" href={hoverPlat.url}>{hoverPlat.url}</a>
+								</div>
+								<div>
+									<button className="titreHover" onClick={() => setHover(false)} style={{marginTop:"5%"}}>Fermer</button>
+								</div>
+								{/* <div>{hoverPlat.saison}</div>
 								<div>{hoverPlat.nbrDeRepasPossible}</div>
 								<div>{hoverPlat.midiSoir}</div>
 								<div>{hoverPlat.tempsDePreparation}</div>
-								<div>{hoverPlat.url}</div>
+								<div>{hoverPlat.url}</div> */}
 							</div>
 						)}
 
 						{platTrouvés && platTrouvés.length !== 0 && (
 							<div className="platsTrouvés">
 								{platTrouvés.map((plat) => (
-									<div className="platTrouvé" onClick={() => readAndUpdatePlat(plat)} onMouseOver={() => hover(plat)} onMouseLeave={() => setHover(false)}>
+									<div className="platTrouvé" onClick={() => readAndUpdatePlat(plat)} onMouseEnter={() => hover(plat)}
+									//  onMouseLeave={() => setHover(false)}
+									 >
 										{plat.nom_plat}
 									</div>
 								))}
 							</div>
 						)}
 
-						{platTrouvés && platTrouvés.length == 0 && <button onClick={ajouterPlat}>Ajouter un nouveau plat</button>}
+						{platTrouvés && <button style={{position:"fixed",bottom:"5%",left:"40%"}} onClick={ajouterPlat}>Ajouter un nouveau plat</button>}
 						<br />
 					</div>
 				</div>
