@@ -393,7 +393,6 @@ const NewPlat = () => {
 			arrayIngredients.pop();
 			console.log(arrayIngredients);
 			let stringIngredients=""
-			console.log(arrayIngredients.length)
 			if (arrayIngredients.length>0)		stringIngredients += arrayIngredients[1]+" "+arrayIngredients[2]+" de "+arrayIngredients[0]
 			if (arrayIngredients.length>3)		stringIngredients +=" ; "+ arrayIngredients[4]+" "+arrayIngredients[5]+" de "+arrayIngredients[3]
 			if (arrayIngredients.length>6)		stringIngredients +=" ; "+ arrayIngredients[7]+" "+arrayIngredients[8]+" de "+arrayIngredients[6]

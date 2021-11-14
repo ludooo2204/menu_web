@@ -62,7 +62,7 @@ box-shadow: 2px 2px 1px 2px black;
   /* height: 30%; */
   position: absolute;
   padding: 10;
-  top: 5%;
+  bottom: 12%;
   left: 25%;
   z-index: 1;
   border: rgb(1,19,34) 3px solid;
@@ -110,7 +110,7 @@ input:focus{
   }
 .platsTrouvés { 
 position: absolute;
-bottom: 10%;
+top:20%;
 left: 15%;
 width: 70%;
 background-color: rgba(255, 255, 255, 0.452);
@@ -123,7 +123,9 @@ flex-wrap: wrap;
 
 }
 .platTrouvé { 
-margin: 0.5rem;
+margin: 0.3rem;
+/* margin-left: 1rem; */
+margin-right: 1.5rem;
 background-color: white;
 width: 30%;
 font-size: 1.2rem;
